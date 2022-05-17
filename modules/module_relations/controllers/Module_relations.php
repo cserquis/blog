@@ -5,7 +5,7 @@ class Module_relations extends Trongate {
         $calling_module_name = segment(1);
         $relation_settings = $this->_get_relation_settings($calling_module_name, $alt_module_name);
         if ($relation_settings == false) {
-            echo '<p style="color: red;">Could not find module relation with '.$alt_module_name.' module!</p>';
+            echo '<p style="color: red;">Could not find module relation with ' . $alt_module_name . ' module!</p>';
         } else {
             $associated_module = $this->_est_associated_module($relation_settings, $calling_module_name);
             $data['update_id'] = segment(3);
@@ -15,7 +15,6 @@ class Module_relations extends Trongate {
             $data['relation_name'] = $this->_build_relation_name($relation_settings);
             $this->view('summary_panel', $data);
         }
-
     }
 
     function _est_associated_module($relation_settings, $calling_module_name) {
@@ -33,16 +32,16 @@ class Module_relations extends Trongate {
 
     function _get_relation_settings($calling_module_name, $alt_module_name) {
         $settings_file_path = '';
-        $relation_names[] = $calling_module_name.'_and_'.$alt_module_name.'.json';
-        $relation_names[] = $alt_module_name.'_and_'.$calling_module_name.'.json';
+        $relation_names[] = $calling_module_name . '_and_' . $alt_module_name . '.json';
+        $relation_names[] = $alt_module_name . '_and_' . $calling_module_name . '.json';
 
-        $dirpath = APPPATH.'modules/module_relations/assets/module_relations';
+        $dirpath = APPPATH . 'modules/module_relations/assets/module_relations';
 
         if (is_dir($dirpath)) {
             $files = scandir($dirpath);
-            foreach($files as $filename) {
+            foreach ($files as $filename) {
                 if (($filename == $relation_names[0]) || ($filename == $relation_names[1])) {
-                    $settings_file_path = $dirpath.'/'.$filename;
+                    $settings_file_path = $dirpath . '/' . $filename;
                 }
             }
         }
@@ -53,13 +52,12 @@ class Module_relations extends Trongate {
             $relation_settings = json_decode(file_get_contents($settings_file_path));
             return $relation_settings;
         }
-
     }
 
     function _build_relation_name($relation_settings) {
         $first_module_name = $relation_settings[0]->module_name;
         $second_module_name = $relation_settings[1]->module_name;
-        $relation_name = 'associated_'.$first_module_name.'_and_'.$second_module_name;
+        $relation_name = 'associated_' . $first_module_name . '_and_' . $second_module_name;
         return $relation_name;
     }
 
@@ -83,7 +81,7 @@ class Module_relations extends Trongate {
         } else {
             $associated_records = $this->_fetch_from_assoc_tbl($data);
         }
-        
+
         http_response_code(200);
         echo json_encode($associated_records);
     }
@@ -114,12 +112,12 @@ class Module_relations extends Trongate {
 
         $associated_records = [];
         $rows = $this->model->query($sql, 'object');
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $row_data['id'] = $row->id;
             $value = '';
-            foreach($bits as $bit) {
+            foreach ($bits as $bit) {
                 $bit = trim($bit);
-                $value.= $row->$bit.' ';
+                $value .= $row->$bit . ' ';
             }
 
             $row_data['value'] = trim($value);
@@ -134,10 +132,10 @@ class Module_relations extends Trongate {
         $sql = 'SHOW TABLES LIKE :table_name';
         $rows = $this->model->query_bind($sql, $params, 'object');
 
-        if(count($rows) == 0) {
-            $filename = str_replace('associated_', '', $params['table_name']).'.json';
-            $dirpath = APPPATH.'modules/module_relations/assets/module_relations';
-            $settings_file_path = $dirpath.'/'.$filename;
+        if (count($rows) == 0) {
+            $filename = str_replace('associated_', '', $params['table_name']) . '.json';
+            $dirpath = APPPATH . 'modules/module_relations/assets/module_relations';
+            $settings_file_path = $dirpath . '/' . $filename;
 
             if (!file_exists($settings_file_path)) {
                 http_response_code(401);
@@ -145,25 +143,25 @@ class Module_relations extends Trongate {
             }
 
             $relation_settings = json_decode(file_get_contents($settings_file_path));
-            $column_name_a = $relation_settings[0]->module_name.'_id';
-            $column_name_b = $relation_settings[1]->module_name.'_id';
+            $column_name_a = $relation_settings[0]->module_name . '_id';
+            $column_name_b = $relation_settings[1]->module_name . '_id';
             $table_name = $params['table_name'];
 
-            $queries[] = 'CREATE TABLE `'.$table_name.'` (
+            $queries[] = 'CREATE TABLE `' . $table_name . '` (
               `id` int(11) NOT NULL,
-              `'.$column_name_a.'` int(11) NOT NULL DEFAULT 0,
-              `'.$column_name_b.'` int(11) NOT NULL DEFAULT 0
+              `' . $column_name_a . '` int(11) NOT NULL DEFAULT 0,
+              `' . $column_name_b . '` int(11) NOT NULL DEFAULT 0
             )';
 
-            $queries[] = 'ALTER TABLE `'.$table_name.'`
+            $queries[] = 'ALTER TABLE `' . $table_name . '`
               ADD PRIMARY KEY (`id`)';
 
-            $queries[] = 'ALTER TABLE `'.$table_name.'`
+            $queries[] = 'ALTER TABLE `' . $table_name . '`
               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT';
 
             $queries[] = 'COMMIT';
 
-            foreach($queries as $query) {
+            foreach ($queries as $query) {
                 $this->model->query($query);
             }
         }
@@ -204,12 +202,12 @@ class Module_relations extends Trongate {
 
         $associated_records = [];
         $rows = $this->model->query($sql, 'object');
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $row_data['id'] = $row->__id;
             $value = '';
-            foreach($bits as $bit) {
+            foreach ($bits as $bit) {
                 $bit = trim($bit);
-                $value.= $row->$bit.' ';
+                $value .= $row->$bit . ' ';
             }
 
             $row_data['value'] = trim($value);
@@ -220,16 +218,16 @@ class Module_relations extends Trongate {
     }
 
     function _est_order_by($bits) {
-        $order_by = $bits[count($bits)-1];
+        $order_by = $bits[count($bits) - 1];
         return $order_by;
     }
 
     function _extract_alt_module_name($relation_name, $calling_module) {
         $bits = explode('_and_', $relation_name);
-        $str_end = $bits[count($bits)-1];
+        $str_end = $bits[count($bits) - 1];
 
         if ($str_end == $calling_module) {
-            $target_str = $bits[count($bits)-2];
+            $target_str = $bits[count($bits) - 2];
             $alt_module = substr($target_str, 11, strlen($target_str));
         } else {
             $alt_module = $str_end;
@@ -269,13 +267,14 @@ class Module_relations extends Trongate {
 
         if (!is_numeric($posted_data['updateId'])) {
             http_response_code(422);
-            echo 'Non numeric update_id.'; die();
+            echo 'Non numeric update_id.';
+            die();
         }
 
         if (isset($posted_data['results'])) {
             $data['results'] = (gettype($posted_data['results']) == 'array' ? $posted_data['results'] : []);
         } else {
-            $data['results'] = [];   
+            $data['results'] = [];
         }
 
         if (isset($posted_data['relationName'])) {
@@ -289,7 +288,7 @@ class Module_relations extends Trongate {
             $data['associated_module'] = $this->_est_associated_module($relation_settings, $data['calling_module']);
         }
 
-        switch($relationship_type) {
+        switch ($relationship_type) {
             case 'one to one':
                 $options = $this->_fetch_available_options_one_to_one($data);
                 break;
@@ -307,12 +306,11 @@ class Module_relations extends Trongate {
         } else {
             die();
         }
-
     }
 
     function _fetch_available_options_one_to_one($data) {
         $num_results = count($data['results']);
-        if ($num_results>0) {
+        if ($num_results > 0) {
             $options = []; //no options available since already assigned
         } else {
             //return records from the 'alt_module' that have not yet been assigned 
@@ -335,35 +333,38 @@ class Module_relations extends Trongate {
 
     function _fetch_available_options_many_to_many($data) {
         //return records from the 'alt_module' that have not yet been assigned to THIS particular module
-        $sql = 'SELECT 
-                    [alt_module].*,
-                    [relation_name].[calling_module]_id as calling_module_id
-                     
-                FROM
-                    [relation_name]
-                RIGHT OUTER JOIN
-                    [alt_module]
-                ON
-                    [relation_name].[alt_module]_id = [alt_module].id
-                GROUP BY
-                [alt_module].id    
+        // $sql = 'SELECT 
+        //             [alt_module].*,
+        //             [relation_name].[calling_module]_id as calling_module_id
 
-                ';
+        //         FROM
+        //             [relation_name]
+        //         RIGHT OUTER JOIN
+        //             [alt_module]
+        //         ON
+        //             [relation_name].[alt_module]_id = [alt_module].id
+        //         GROUP BY
+        //         [alt_module].id    
+
+        //         ';
+
+        $sql = 'SELECT *
+                FROM [alt_module]
+                ORDER BY [alt_module].[order_by]';
 
         $alt_records = $this->_fetch_available($sql, $data);
 
         $exclude_array = [];
-        foreach($data['results'] as $result) {
+        foreach ($data['results'] as $result) {
             $exclude_array[] = $result['value']; //alread assigned to this record
         }
 
         $options = [];
-        foreach($alt_records as $record) {
+        foreach ($alt_records as $record) {
 
             if (!in_array($record['value'], $exclude_array)) {
                 $options[] = $record;
             }
-
         }
 
         http_response_code(200);
@@ -391,12 +392,12 @@ class Module_relations extends Trongate {
         $available_records = [];
         $rows = $this->model->query($sql, 'object');
 
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $row_data['key'] = $row->id;
             $value = '';
-            foreach($bits as $bit) {
+            foreach ($bits as $bit) {
                 $bit = trim($bit);
-                $value.= $row->$bit.' ';
+                $value .= $row->$bit . ' ';
             }
 
             $row_data['value'] = trim($value);
@@ -423,12 +424,12 @@ class Module_relations extends Trongate {
         $available_records = [];
         $rows = $this->model->query($sql, 'object');
 
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $row_data['key'] = $row->id;
             $value = '';
-            foreach($bits as $bit) {
+            foreach ($bits as $bit) {
                 $bit = trim($bit);
-                $value.= $row->$bit.' ';
+                $value .= $row->$bit . ' ';
             }
 
             $row_data['value'] = trim($value);
@@ -445,13 +446,14 @@ class Module_relations extends Trongate {
 
         if (!is_numeric($update_id)) {
             http_response_code(422);
-            echo 'Non numeric update_id.'; die();
+            echo 'Non numeric update_id.';
+            die();
         }
 
         $relation_name = $posted_data['relationName'];
         $calling_module_name = $posted_data['callingModule'];
 
-        $ditch = 'associated_'.$calling_module_name.'_and_';
+        $ditch = 'associated_' . $calling_module_name . '_and_';
         $strpos = strpos($relation_name, $ditch);
 
         if (is_numeric($strpos)) {
@@ -472,15 +474,14 @@ class Module_relations extends Trongate {
             $parent_module_name = $relation_settings[0]->module_name;
             $child_module = $relation_settings[1];
             $identifier_column = $child_module->identifier_column;
-            $foreign_key = $parent_module_name.'_id';
+            $foreign_key = $parent_module_name . '_id';
             $data[$foreign_key] = $update_id;
             $this->model->update($posted_data['value'], $data, $child_module->module_name);
         } else {
-            $data[$calling_module_name.'_id'] = $update_id;
-            $data[$alt_module_name.'_id'] = $posted_data['value'];
+            $data[$calling_module_name . '_id'] = $update_id;
+            $data[$alt_module_name . '_id'] = $posted_data['value'];
             $this->model->insert($data, $relation_name);
         }
-
     }
 
     function disassociate() {
@@ -499,14 +500,13 @@ class Module_relations extends Trongate {
 
         if ($relationship_type == 'one to many') {
             $child_module_table = $relation_settings[1]->module_name;
-            $foreign_key = $relation_settings[0]->module_name.'_id';
+            $foreign_key = $relation_settings[0]->module_name . '_id';
             $params['update_id'] = $id;
-            $sql = 'UPDATE '.$child_module_table.' SET '.$foreign_key.'=0 WHERE id=:update_id';
+            $sql = 'UPDATE ' . $child_module_table . ' SET ' . $foreign_key . '=0 WHERE id=:update_id';
             $this->model->query_bind($sql, $params, 'object');
         } else {
             $this->model->delete($id, $target_tbl);
         }
-
     }
 
     function _fetch_options($selected_key, $calling_module_name, $alt_module_name) {
@@ -521,10 +521,10 @@ class Module_relations extends Trongate {
         //get the alt module idenfifier column
         if ($relation_settings[0]->module_name == $alt_module_name) {
             $identifier_column = $relation_settings[0]->identifier_column;
-            $foreign_key = $relation_settings[1]->module_name.'_id';
+            $foreign_key = $relation_settings[1]->module_name . '_id';
         } else {
             $identifier_column = $relation_settings[1]->identifier_column;
-            $foreign_key = $relation_settings[0]->module_name.'_id';
+            $foreign_key = $relation_settings[0]->module_name . '_id';
         }
 
         $relationship_type = $relation_settings[2]->relationship_type;
@@ -533,18 +533,18 @@ class Module_relations extends Trongate {
         $order_by = $this->_est_order_by($bits);
 
         if ($relationship_type == 'one to many') {
-            $options = $this->_get_parent_options($alt_module_name, $identifier_column, $selected_key); 
+            $options = $this->_get_parent_options($alt_module_name, $identifier_column, $selected_key);
         } else {
 
-            $sql = 'select * from '.$alt_module_name.' order by '.$order_by;
+            $sql = 'select * from ' . $alt_module_name . ' order by ' . $order_by;
             $rows = $this->model->query($sql, 'object');
 
-            foreach($rows as $row) {
+            foreach ($rows as $row) {
                 $row_data['key'] = $row->id;
                 $value = '';
-                foreach($bits as $bit) {
+                foreach ($bits as $bit) {
                     $bit = trim($bit);
-                    $value.= $row->$bit.' ';
+                    $value .= $row->$bit . ' ';
                 }
 
                 $row_desc = trim($value);
@@ -552,13 +552,10 @@ class Module_relations extends Trongate {
 
                 if ($selected_key == $row->id) {
                     $row_label = $value;
-                    $options[0] = strtoupper('*** Disassociate with '.$row_label.' ***');
+                    $options[0] = strtoupper('*** Disassociate with ' . $row_label . ' ***');
                 } else {
-
                 }
-
             }
-
         }
 
         return $options;
@@ -567,7 +564,7 @@ class Module_relations extends Trongate {
     function _get_parent_options($parent_module_name, $identifier_column, $selected_key) {
 
         $options = [];
-        $sql = 'select id, '.$identifier_column.' from '.$parent_module_name.' order by '.$identifier_column;
+        $sql = 'select id, ' . $identifier_column . ' from ' . $parent_module_name . ' order by ' . $identifier_column;
         $rows = $this->model->query($sql, 'object');
 
         if (($selected_key == '') || ($selected_key == 0) || ($selected_key == '0')) {
@@ -579,15 +576,15 @@ class Module_relations extends Trongate {
         foreach ($rows as $row) {
             $identifier_column_str = '';
 
-            foreach($bits as $bit) {
+            foreach ($bits as $bit) {
                 $bit = trim($bit);
-                $identifier_column_str.= $row->$bit.' ';
+                $identifier_column_str .= $row->$bit . ' ';
             }
 
             $identifier_column_str = trim($identifier_column_str);
 
             if ($selected_key == $row->id) {
-                $options[0] = strtoupper('*** Disassociate with '.$identifier_column_str.' ***');
+                $options[0] = strtoupper('*** Disassociate with ' . $identifier_column_str . ' ***');
                 $options[$selected_key] = $identifier_column_str;
             } else {
                 $options[$row->id] = $identifier_column_str;
@@ -596,5 +593,4 @@ class Module_relations extends Trongate {
 
         return $options;
     }
-
 }
